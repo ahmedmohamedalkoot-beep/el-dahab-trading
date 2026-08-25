@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}لوحة التحكم - El Dahab Trading{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4">
+        <i class="fas fa-home"></i> لوحة التحكم
+    </h1>
+    
+    <!-- Statistics Row -->
+    <div class="row mb-5">
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <i class="fas fa-warehouse"></i>
+                <div class="stat-number">{{ total_warehouses }}</div>
+                <div class="stat-label">المخازن</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <i class="fas fa-box"></i>
+                <div class="stat-number">{{ total_items }}</div>
+                <div class="stat-label">الأصناف</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <i class="fas fa-file-invoice"></i>
+                <div class="stat-number">{{ total_invoices }}</div>
+                <div class="stat-label">الفواتير</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <i class="fas fa-users"></i>
+                <div class="stat-number">{{ total_users }}</div>
+                <div class="stat-label">المستخدمون</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Recent Invoices -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-history"></i> آخر الفواتير
+                </div>
+                <div class="card-body">
+                    {% if recent_invoices %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>رقم الفاتورة</th>
+                                        <th>النوع</th>
+                                        <th>المخزن</th>
+                                        <th>التاريخ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for invoice in recent_invoices %}
+                                        <tr>
+                                            <td>
+                                                <a href="{{ url_for('invoice.view_invoice', id=invoice.id) }}">
+                                                    {{ invoice.invoice_number }}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                {% if invoice.invoice_type == 'add' %}
+                                                    <span class="badge bg-success">إضافة</span>
+                                                {% else %}
+                                                    <span class="badge bg-danger">تنزيل</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ invoice.warehouse.name }}</td>
+                                            <td>{{ invoice.created_at.strftime('%Y-%m-%d') }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center">لا توجد فواتير</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Activities -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-tasks"></i> آخر الأنشطة
+                </div>
+                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                    {% if recent_activities %}
+                        <div class="activity-timeline">
+                            {% for activity in recent_activities %}
+                                <div class="activity-item mb-3 pb-3 border-bottom" style="border-bottom-color: #eee !important;">
+                                    <div class="d-flex justify-content-between">
+                                        <strong style="color: var(--primary-color);">{{ activity.action }}</strong>
+                                        <small class="text-muted">{{ activity.created_at.strftime('%H:%M') }}</small>
+                                    </div>
+                                    <small class="text-muted">بواسطة: {{ activity.user.full_name }}</small>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center">لا توجد أنشطة</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
